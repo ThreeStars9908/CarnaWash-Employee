@@ -1,0 +1,12 @@
+export './card_model.dart';
+export './conditions_model.dart';
+export './notification_model.dart';
+export './user_model.dart';
+export './schedule_model.dart';
+export './first_login_model.dart';
+export './washer_model.dart';
+export './quiz_model.dart';
+export './payment_model.dart';
+export './additional_model.dart';
+export './car_model.dart';
+export './carobject_model.dart';

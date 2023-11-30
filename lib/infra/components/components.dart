@@ -1,0 +1,1 @@
+export 'dialog_custom_component.dart';
