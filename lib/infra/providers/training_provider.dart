@@ -1,4 +1,4 @@
-// ignore_for_file: use_build_context_synchronously, non_constant_identifier_names
+// ignore_for_file: use_build_context_synchronously
 
 import 'dart:async';
 import 'dart:convert';
@@ -11,18 +11,20 @@ import '../../data/data.dart';
 import '../../ui/ui.dart';
 import '../infra.dart';
 
-class ConditionProvider with ChangeNotifier {
-  late ConditionModel _condition;
-  ConditionModel get condition => _condition;
+class TrainingProvider with ChangeNotifier {
+  final List<TrainingTypeModel> _trainingTypes = [];
 
-  Future<void> loadTerms(BuildContext context) async {
+  List<TrainingTypeModel> get trainingTypes => _trainingTypes;
+
+  Future<void> loadTrainingTypes(BuildContext context) async {
     final UserProvider userProvider = Provider.of(
       context,
       listen: false,
     );
     try {
+
       final response = await http.get(
-        Uri.parse('${Constants.BACKEND_BASE_URL}/faq-terms/condition/'),
+        Uri.parse('${Constants.BACKEND_BASE_URL}/training/modules/'),
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
@@ -30,13 +32,16 @@ class ConditionProvider with ChangeNotifier {
         },
       );
 
-      var v = jsonDecode(response.body);
-      print('terms condition' + response.body);
+      dynamic v = jsonDecode(response.body);
+      print('training types' + response.body);
       if (response.statusCode == 200) {
-        _condition = ConditionModel(
-          id: v['id'],
-          tems_conditions: v['tems_conditions'],
-        );
+        _trainingTypes.clear();
+        for (Map i in v) {
+          _trainingTypes.add(TrainingTypeModel(
+              id: i['id'],
+              name: i['name'],
+              progress: i['progress']));
+        }
       } else if (v['errors'] != '') {
         await comumDialog(
           context,
@@ -47,7 +52,7 @@ class ConditionProvider with ChangeNotifier {
     } catch (e) {
       await comumDialog(
         context,
-        'Provider Error! loadTerms',
+        'Provider Error! GetNotifications',
         e.toString(),
       );
     }

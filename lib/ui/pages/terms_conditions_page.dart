@@ -23,6 +23,7 @@ class _TermsConditionsPageState extends State<TermsConditionsPage> {
       );
 
       await conditionProvider.loadTerms(context);
+      setState(() {});
     });
   }
 

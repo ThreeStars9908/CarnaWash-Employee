@@ -11,40 +11,29 @@ import '../../data/data.dart';
 import '../../ui/ui.dart';
 import '../infra.dart';
 
-class NotificationProvider with ChangeNotifier {
-  final List<GeralNotificationModel> _geralNotifications = [];
-  final List<UserNotificationModel> _notifications = [];
+class TrainingModuleProvider with ChangeNotifier {
+  final List<QuizQuestionModel> _trainingQuiz = [];
 
-  List<GeralNotificationModel> get geralNotifications => _geralNotifications;
-  List<UserNotificationModel> get notifications => _notifications;
+  List<QuizQuestionModel> get trainingQuiz => _trainingQuiz;
 
-  Future<void> loadNotifications(BuildContext context) async {
+  Future<void> saveTrainingHistory(BuildContext context, int? module_id, int module_progress) async {
     final UserProvider userProvider = Provider.of(
       context,
       listen: false,
     );
     try {
-
-      final response = await http.get(
-        Uri.parse('${Constants.BACKEND_BASE_URL}/notification/sent/'),
+      final response = await http.post(
+        Uri.parse('${Constants.BACKEND_BASE_URL}/users/washer/skills/${module_id}/${module_progress}'),
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
           'Authorization': 'Bearer ${userProvider.token}',
         },
       );
-
 
       dynamic v = jsonDecode(response.body);
       if (response.statusCode == 200) {
-        _notifications.clear();
-        for (Map i in v) {
-          _notifications.add(UserNotificationModel(
-              notification_id: i['notification_id'],
-              user_type_id: i['user_type_id'],
-              user_id: i['user_id']));
-        }
-        await loadGeralNotifications(context);
+
       } else if (v['errors'] != '') {
         await comumDialog(
           context,
@@ -55,20 +44,21 @@ class NotificationProvider with ChangeNotifier {
     } catch (e) {
       await comumDialog(
         context,
-        'Provider Error! GetNotifications',
+        'Provider Error! Update training progress',
         e.toString(),
       );
     }
   }
 
-  Future<void> loadGeralNotifications(BuildContext context) async {
+  Future<TrainingModuleModel?> loadTrainingModule(BuildContext context, int idx) async {
     final UserProvider userProvider = Provider.of(
       context,
       listen: false,
     );
     try {
+
       final response = await http.get(
-        Uri.parse('${Constants.BACKEND_BASE_URL}/notification/user/'),
+        Uri.parse('${Constants.BACKEND_BASE_URL}/training/modules/${idx}'),
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
@@ -76,16 +66,20 @@ class NotificationProvider with ChangeNotifier {
         },
       );
 
-      var v = jsonDecode(response.body);
-
+      dynamic v = jsonDecode(response.body);
+      print('eeee' + v.toString());
       if (response.statusCode == 200) {
-        for (Map i in v) {
-          _geralNotifications.add(GeralNotificationModel(
-              id: i['id'],
-              title: i['title'],
-              destined_to: i['destined_to'],
-              type: i['type']));
-        }
+        Map<String, dynamic> jsonData = json.decode(response.body);
+
+        String moduleDescription = jsonData['description']['description'];
+        int videoId = jsonData['videos']['id'];
+        int moduleId = jsonData['videos']['module_id'];
+        String videoPath = jsonData['videos']['path'];
+        String videoDescription = jsonData['videos']['description'];
+        List<dynamic> questions = jsonData['questions'];
+
+        return TrainingModuleModel(module_id: moduleId, video_path: videoPath,
+            module_description: moduleDescription, video_description: videoDescription, question_list: questions);
       } else if (v['errors'] != '') {
         await comumDialog(
           context,
@@ -96,19 +90,9 @@ class NotificationProvider with ChangeNotifier {
     } catch (e) {
       await comumDialog(
         context,
-        'Provider Error! GetNotifications',
+        'Provider Error! GetTrainingModule',
         e.toString(),
       );
     }
-  }
-
-  GeralNotificationModel? getNotificationID(BuildContext context, int id) {
-    for (GeralNotificationModel element in _geralNotifications) {
-      if (element.id == id) {
-        return element;
-      }
-    }
-
-    return null;
   }
 }

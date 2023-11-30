@@ -101,13 +101,20 @@ class _AvailabilityPageState extends State<AvailabilityPage> {
                         ),
                       ),
                       SizedBox(height: 5),
-                      timeAvailableBox(context, timeAvailable.sunday_list, 0),
-                      timeAvailableBox(context, timeAvailable.monday_list, 1),
-                      timeAvailableBox(context, timeAvailable.tuesday_list, 2),
-                      timeAvailableBox(context, timeAvailable.wednesday_list, 3),
-                      timeAvailableBox(context, timeAvailable.thursday_list, 4),
-                      timeAvailableBox(context, timeAvailable.friday_list, 5),
-                      timeAvailableBox(context, timeAvailable.saturday_list, 6),
+                      if (timeAvailable != null)
+                        timeAvailableBox(context, timeAvailable.sunday_list, 0),
+                      if (timeAvailable != null)
+                        timeAvailableBox(context, timeAvailable.monday_list, 1),
+                      if (timeAvailable != null)
+                        timeAvailableBox(context, timeAvailable.tuesday_list, 2),
+                      if (timeAvailable != null)
+                        timeAvailableBox(context, timeAvailable.wednesday_list, 3),
+                      if (timeAvailable != null)
+                        timeAvailableBox(context, timeAvailable.thursday_list, 4),
+                      if (timeAvailable != null)
+                        timeAvailableBox(context, timeAvailable.friday_list, 5),
+                      if (timeAvailable != null)
+                        timeAvailableBox(context, timeAvailable.saturday_list, 6),
                       SizedBox(height: 20),
                       TextButton(
                         style: ButtonStyle(

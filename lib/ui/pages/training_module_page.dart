@@ -1,11 +1,17 @@
+import 'package:app_employee/data/data.dart';
+import 'package:app_employee/infra/providers/training_module_provider.dart';
+import 'package:app_employee/ui/pages/training_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../ui.dart';
 import 'package:video_player/video_player.dart';
+import 'package:provider/provider.dart';
+import 'dart:convert';
 class TrainingModulePage extends StatefulWidget{
   final String moduleName;
-  const TrainingModulePage(this.moduleName);
+  final int? moduleID;
+  const TrainingModulePage(this.moduleID,this.moduleName);
 
   @override
   State<TrainingModulePage> createState() => _TrainingModulePageState();
@@ -14,97 +20,66 @@ class _TrainingModulePageState extends State<TrainingModulePage> {
 
   late VideoPlayerController _controller;
   int n = 1;
-  List<Map<String, dynamic>> questionList = [
-    {
-      'key': '1',
-      'question': '1What is the capital of Paris?',
-      'alternatives': ['Berlin', 'Paris', 'Madrid', 'Rome'],
-      'answer': 'Paris',
-      'selectedAnswer' : -1,
-    },
-    {
-      'key': '2',
-      'question': '2What is the capital of Madrid?',
-      'alternatives': ['Berlin', 'Paris', 'Madrid', 'Rome'],
-      'answer': 'Paris',
-      'selectedAnswer' : -1,
-    },
-    {
-      'key': '3',
-      'question': '3What is the capital of Rome?',
-      'alternatives': ['Berlin', 'Paris', 'Madrid', 'Rome'],
-      'answer': 'Paris',
-      'selectedAnswer' : -1,
-    },
-    {
-      'key': '4',
-      'question': '4What is the capital of Berlin?',
-      'alternatives': ['Berlin', 'Paris', 'Madrid', 'Rome'],
-      'answer': 'Paris',
-      'selectedAnswer' : -1,
-    },
-    {
-      'key': '5',
-      'question': '5What is the capital of France?',
-      'alternatives': ['Berlin', 'Paris', 'Madrid', 'Rome'],
-      'answer': 'Paris',
-      'selectedAnswer' : -1,
-    },
-    {
-      'key': '6',
-      'question': '6What is the capital of France?',
-      'alternatives': ['Berlin', 'Paris', 'Madrid', 'Rome'],
-      'answer': 'Paris',
-      'selectedAnswer' : -1,
-    },
-    {
-      'key': '7',
-      'question': '7What is the capital of France?',
-      'alternatives': ['Berlin', 'Paris', 'Madrid', 'Rome'],
-      'answer': 'Paris',
-      'selectedAnswer' : -1,
-    },
-    {
-      'key': '8',
-      'question': '8What is the capital of France?',
-      'alternatives': ['Berlin', 'Paris', 'Madrid', 'Rome'],
-      'answer': 'Paris',
-      'selectedAnswer' : -1,
-    },
-    {
-      'key': '9',
-      'question': '9What is the capital of France?',
-      'alternatives': ['Berlin', 'Paris', 'Madrid', 'Rome'],
-      'answer': 'Paris',
-      'selectedAnswer' : -1,
-    },
-    {
-      'key': '10',
-      'question': '10What is the capital of France?',
-      'alternatives': ['Berlin', 'Paris', 'Madrid', 'Rome'],
-      'answer': 'Paris',
-      'selectedAnswer' : -1,
-    },
-  ];
+  List<Map<String, dynamic>> questionList = [];
   int questionValue = 0;
   double correct_percentage = 0.0;
+  late TrainingModuleProvider trainingModuleProvider;
+  late TrainingModuleModel? trainingModuleModel;
   @override
   void initState() {
     super.initState();
-    _controller = VideoPlayerController.networkUrl(Uri.parse(
-    'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4'))
-    ..initialize().then((_) {
-    // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
-    setState(() {
-      _controller.play();
+
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+      trainingModuleProvider = Provider.of(
+        context,
+        listen: false,
+      );
+      trainingModuleModel = await trainingModuleProvider.loadTrainingModule(context, widget.moduleID!);
+
+      print('trainingModuleModel' + trainingModuleModel!.module_description);
+      // String video_url = Constants.BACKEND_BASE_URL + "/" + trainingModuleModel!.video_path;
+      String video_url = "https://player.vimeo.com/external/489831438.sd.mp4?s=9f77e514c2431ba20fbdd90b0d1820209226adc9&profile_id=164&oauth2_token_id=57447761";
+      List<dynamic> questionString = trainingModuleModel!.question_list;
+      questionList = convertListToFormat(questionString);
+      _controller = VideoPlayerController.networkUrl(Uri.parse(
+          video_url))
+        ..initialize().then((_) {
+          // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
+          setState(() {
+            _controller.play();
+          });
+        });
+      setState(() {});
     });
-    });
+
+
   }
   @override
   void dispose() {
     super.dispose();
     _controller.dispose();
   }
+
+  List<Map<String, dynamic>> convertListToFormat(List<dynamic> dataList) {
+    List<Map<String, dynamic>> resultList = [];
+
+    for (var item in dataList) {
+      List<String> alternatives = (item['alternatives_list'] as String).split(';');
+
+      Map<String, dynamic> questionMap = {
+        'key': item['id'].toString(),
+        'question': '${item['id']} ${item['question']}',
+        'alternatives': alternatives,
+        'answer': item['answer'],
+        'selectedAnswer': -1,
+      };
+
+      resultList.add(questionMap);
+    }
+
+    return resultList;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -114,7 +89,7 @@ class _TrainingModulePageState extends State<TrainingModulePage> {
           : n ==2
           ? partThree(context)
           : n == 3
-          ? partFour(context):partOne(context)
+          ? partFour(context, trainingModuleModel):partOne(context)
     );
   }
   Widget partOne(BuildContext context){
@@ -149,9 +124,9 @@ class _TrainingModulePageState extends State<TrainingModulePage> {
                   ],
                 ),
                 const SizedBox(height: 32),
-                const Text(
-                  'Introducing the module and explaining the video briefly.',
-                  style: TextStyle(
+                Text(
+                  trainingModuleModel!.module_description,
+                  style: const TextStyle(
                     color: Colors.grey,
                     fontSize: 16,
                   ),
@@ -163,10 +138,9 @@ class _TrainingModulePageState extends State<TrainingModulePage> {
                   child: VideoPlayer(_controller),
                 ) : Container(),
                 const SizedBox(height: 32),
-                const Text(
-                  'Text explaining briefly what this module is about and what the questions will'
-                      ' cover and that the quiz will count to having a certified washer profile.',
-                  style: TextStyle(
+                Text(
+                  trainingModuleModel!.video_description,
+                  style:const TextStyle(
                     color: Colors.grey,
                     fontSize: 16,
                   ),
@@ -352,10 +326,10 @@ class _TrainingModulePageState extends State<TrainingModulePage> {
                 const SizedBox(height: 16),
                 Column(
                   children: List.generate(
-                    chunk(questionList, 5)[questionValue].length,
+                    chunk(questionList, 3)[questionValue].length,
                         (index) {
                       return questionBox(context,
-                          chunk(questionList, 5)[questionValue][index], index + questionValue * 5);
+                          chunk(questionList, 3)[questionValue][index], index + questionValue * 3);
                     },
                   ),
                 ),
@@ -376,7 +350,7 @@ class _TrainingModulePageState extends State<TrainingModulePage> {
                     ),
                   ),
                   onPressed: () {
-                    if (questionValue < chunk(questionList, 5).length - 1) {
+                    if (questionValue < chunk(questionList, 3).length - 1) {
                       setState(() {
                         // Move to the next set of questions
                         questionValue++;
@@ -429,7 +403,7 @@ class _TrainingModulePageState extends State<TrainingModulePage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          '${n + 1}. ${quest['question']}',
+          '${quest['question']}',
           style: const TextStyle(
             fontWeight: FontWeight.bold,
           ),
@@ -475,7 +449,11 @@ class _TrainingModulePageState extends State<TrainingModulePage> {
     );
   }
 
-  Widget partFour(BuildContext context){
+  Widget partFour(BuildContext context, TrainingModuleModel? currentModule){
+    TrainingModuleProvider trainingModuleProvider = Provider.of(
+      context,
+      listen: false,
+    );
     return SingleChildScrollView(
       child: Center(
         child: SizedBox(
@@ -541,8 +519,24 @@ class _TrainingModulePageState extends State<TrainingModulePage> {
                     ),
                   ),
                   onPressed: () {
-                    setState(() {
-                      n = correct_percentage >= 80 ? 4 : 2; // Change to the next module or watch video again
+                    setState(() async{
+                      await trainingModuleProvider.saveTrainingHistory(context, currentModule!.module_id, correct_percentage.toInt());
+                      if(correct_percentage >= 80){
+                        setState(() {
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => TrainingPage(),
+                            ),
+                          );
+                        });
+                      }
+                      else{
+                        setState(() {
+                          n = 2;
+                        });
+                      }
+                      // n = correct_percentage >= 80 ? 4 : 2; // Change to the next module or watch video again
                     });
                   },
                   child: Text(

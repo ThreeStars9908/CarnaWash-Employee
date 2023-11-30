@@ -1,8 +1,12 @@
+import 'package:app_employee/data/models/models.dart';
+import 'package:app_employee/infra/providers/training_provider.dart';
 import 'package:app_employee/ui/pages/training_module_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../ui.dart';
+import 'package:provider/provider.dart';
+import '../../data/data.dart';
 
 class TrainingPage extends StatefulWidget{
   const TrainingPage({super.key});
@@ -10,9 +14,52 @@ class TrainingPage extends StatefulWidget{
   @override
   State<TrainingPage> createState() => _TrainingPageState();
 }
-class _TrainingPageState extends State<TrainingPage> {
+class _TrainingPageState extends State<TrainingPage> with WidgetsBindingObserver{
+
+  late TrainingProvider trainingProvider;
+  late List<TrainingTypeModel?> listTraining;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+      trainingProvider = Provider.of(
+        context,
+        listen: false,
+      );
+      await trainingProvider.loadTrainingTypes(context);
+      listTraining = trainingProvider.trainingTypes;
+      setState(() {});
+    });
+  }
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    print('page resumed----$state');
+    if (state == AppLifecycleState.resumed) {
+      print('page resumed----');
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+        trainingProvider = Provider.of(
+          context,
+          listen: false,
+        );
+        await trainingProvider.loadTrainingTypes(context);
+        listTraining = trainingProvider.trainingTypes;
+        setState(() {});
+      });
+    }
+  }
   @override
   Widget build(BuildContext context) {
+    if (listTraining == null) {
+      // Display a loading state or return an empty widget
+      return CircularProgressIndicator();
+    }
     return Scaffold(
       bottomNavigationBar: navigationBarComponent(context),
       body: SingleChildScrollView(
@@ -50,30 +97,15 @@ class _TrainingPageState extends State<TrainingPage> {
                     ),
                   ),
                   const SizedBox(height: 32),
-                  trainingBox(
-                    context,
-                    'Training module I',
-                    '80%'
-                  ),
-                  trainingBox(
-                    context,
-                    'Training module II',
-                      '80%'
-                  ),
-                  trainingBox(
-                    context,
-                    'Training module III',
-                      '80%'
-                  ),
-                  trainingBox(
-                    context,
-                    'Training module IV',
-                      '80%'
-                  ),
-                  trainingBox(
-                    context,
-                    'Trainig module V',
-                      '80%'
+                  Column(
+                    children: List.generate(
+                      listTraining.length,
+                          (index) {
+                        return trainingBox(
+                          context, listTraining[index]!, listTraining[index]!.name, listTraining[index]!.progress.toString(),
+                        );
+                      },
+                    ),
                   ),
                 ],
               ),
@@ -86,16 +118,17 @@ class _TrainingPageState extends State<TrainingPage> {
 
   GestureDetector trainingBox(
       BuildContext context,
+      TrainingTypeModel model_idx,
       String text,
       String completePercent,
       ) {
     return GestureDetector(
       onTap: (){
         print(text);
-        Navigator.push(
+        Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => TrainingModulePage(text),
+            builder: (context) => TrainingModulePage(model_idx.id,text),
           ),
         );
       },
@@ -136,11 +169,11 @@ class _TrainingPageState extends State<TrainingPage> {
                     SizedBox(
                       width: MediaQuery.of(context).size.width * 0.1,
                       child: Text(
-                        completePercent,
-                        style: const TextStyle(
+                        '$completePercent%',
+                        style: TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.w300,
-                            color: Colors.green
+                            color: int.parse(completePercent) >= 50 ? Colors.green : Colors.red,
                         ),
                       ),
                     ),

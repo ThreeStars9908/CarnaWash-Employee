@@ -66,7 +66,7 @@ class _PaymentsPageState extends State<PaymentsPage> {
                         children: [
                           backButtonComponent(context),
                           const Text(
-                            'Payments',
+                            'Payment History',
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.w500,

@@ -23,6 +23,7 @@ class _NotificationPageState extends State<NotificationPage> {
 
       await notificationProvider.loadGeralNotifications(context);
       await notificationProvider.loadNotifications(context);
+      setState(() {});
     });
   }
 

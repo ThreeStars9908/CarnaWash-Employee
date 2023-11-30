@@ -10,3 +10,6 @@ export './payment_model.dart';
 export './additional_model.dart';
 export './car_model.dart';
 export './carobject_model.dart';
+export './training_type_model.dart';
+export './training_module_model.dart';
+export './products_model.dart';

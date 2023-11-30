@@ -22,4 +22,5 @@ class AppRoutes {
   static const TERMS = '/terms';
   static const AVAILABILITY = '/availability';
   static const WASH_REQUEST = '/wash_request';
+  static const PAY_REQUEST = '/pay_requlest';
 }

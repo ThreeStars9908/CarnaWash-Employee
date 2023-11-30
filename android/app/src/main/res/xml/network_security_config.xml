@@ -1,0 +1,12 @@
+<!-- res/xml/network_security_config.xml -->
+<network-security-config>
+  <base-config cleartextTrafficPermitted="false">
+    <trust-anchors>
+      <!-- Trust preinstalled CAs -->
+      <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">http://192.168.2.26</domain>
+      </domain-config>
+      <certificates src="system" />
+    </trust-anchors>
+  </base-config>
+</network-security-config>

@@ -1,3 +1,7 @@
+import 'package:app_employee/infra/providers/products_provider.dart';
+import 'package:app_employee/infra/providers/training_module_provider.dart';
+import 'package:app_employee/infra/providers/training_provider.dart';
+import 'package:app_employee/ui/pages/pay_page.dart';
 import 'package:app_employee/ui/pages/products_page.dart';
 import 'package:app_employee/ui/pages/training_page.dart';
 import 'package:flutter/material.dart';
@@ -41,6 +45,15 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider<VehiclesProvider>(
           create: (context) => VehiclesProvider(),
         ),
+        ChangeNotifierProvider<TrainingProvider>(
+          create: (context) => TrainingProvider(),
+        ),
+        ChangeNotifierProvider<TrainingModuleProvider>(
+          create: (context) => TrainingModuleProvider(),
+        ),
+        ChangeNotifierProvider<ProductsProvider>(
+          create: (context) => ProductsProvider(),
+        ),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -68,6 +81,7 @@ class MyApp extends StatelessWidget {
           AppRoutes.TERMS: (_) => const TermsConditionsPage(),
           AppRoutes.AVAILABILITY: (_) => const AvailabilityPage(),
           AppRoutes.WASH_REQUEST: (_) => WashRequestPage(),
+          AppRoutes.PAY_REQUEST: (_) => PayPage(),
         },
       ),
     );

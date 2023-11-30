@@ -1,8 +1,9 @@
-// ignore_for_file: use_build_context_synchronously, non_constant_identifier_names
+// ignore_for_file: use_build_context_synchronously
 
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:app_employee/data/models/products_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -11,18 +12,20 @@ import '../../data/data.dart';
 import '../../ui/ui.dart';
 import '../infra.dart';
 
-class ConditionProvider with ChangeNotifier {
-  late ConditionModel _condition;
-  ConditionModel get condition => _condition;
+class ProductsProvider with ChangeNotifier {
+  final List<ProductsModel> _products = [];
 
-  Future<void> loadTerms(BuildContext context) async {
+  List<ProductsModel> get products => _products;
+
+  Future<void> loadProducts(BuildContext context) async {
     final UserProvider userProvider = Provider.of(
       context,
       listen: false,
     );
     try {
+
       final response = await http.get(
-        Uri.parse('${Constants.BACKEND_BASE_URL}/faq-terms/condition/'),
+        Uri.parse('${Constants.BACKEND_BASE_URL}/products/all/'),
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
@@ -30,13 +33,18 @@ class ConditionProvider with ChangeNotifier {
         },
       );
 
-      var v = jsonDecode(response.body);
-      print('terms condition' + response.body);
+      dynamic v = jsonDecode(response.body);
+      print('products' + response.body);
       if (response.statusCode == 200) {
-        _condition = ConditionModel(
-          id: v['id'],
-          tems_conditions: v['tems_conditions'],
-        );
+        _products.clear();
+        for (Map i in v) {
+          _products.add(ProductsModel(
+              id: i['id'],
+              name: i['name'],
+              price: i['price'],
+              information: i['information'],
+              photo: i['photo']));
+        }
       } else if (v['errors'] != '') {
         await comumDialog(
           context,
@@ -47,7 +55,7 @@ class ConditionProvider with ChangeNotifier {
     } catch (e) {
       await comumDialog(
         context,
-        'Provider Error! loadTerms',
+        'Provider Error! getProducts',
         e.toString(),
       );
     }
