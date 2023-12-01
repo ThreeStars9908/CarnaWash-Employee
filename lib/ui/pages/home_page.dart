@@ -149,6 +149,10 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget validatedTrue(BuildContext context){
+    if (washerProvider.washerInfo == null) {
+      // Display a loading state or return an empty widget
+      return CircularProgressIndicator();
+    }
     return Padding(
       padding: const EdgeInsets.only(
         left: 25,

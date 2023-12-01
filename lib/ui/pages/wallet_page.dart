@@ -13,10 +13,26 @@ class WalletPage extends StatefulWidget {
 }
 
 class _WalletPageState extends State<WalletPage> {
+  late WalletProvider walletProvider;
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+      walletProvider = Provider.of(
+        context,
+        listen: false,
+      );
+      await walletProvider.loadCards(context);
+      setState(() {});
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    WalletProvider walletProvider = Provider.of(context, listen: false);
-
+    if (walletProvider == null) {
+      // Display a loading state or return an empty widget
+      return CircularProgressIndicator();
+    }
     return Scaffold(
       backgroundColor: Colors.grey[100]!,
       bottomNavigationBar: navigationBarComponent(context),

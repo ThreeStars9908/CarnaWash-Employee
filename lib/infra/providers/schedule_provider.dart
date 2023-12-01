@@ -67,7 +67,7 @@ class ScheduleProvider with ChangeNotifier {
     } catch (e) {
       await comumDialog(
         context,
-        'Provider Error!',
+        'Provider Error-!',
         e.toString(),
       );
     }

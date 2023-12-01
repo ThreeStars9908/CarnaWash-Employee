@@ -144,7 +144,7 @@ class WasherProvider with ChangeNotifier {
       );
 
       var v = jsonDecode(response.body);
-
+      print('quiz list' + response.body);
       if (response.statusCode == 200) {
         for (Map i in v) {
           _listQuizQuestions.add(QuizQuestionModel(
@@ -227,6 +227,7 @@ class WasherProvider with ChangeNotifier {
     }
 
     _quizGrade = ((points / list.length) * 100).toInt();
+    print('quizGrade' + _quizGrade.toString());
   }
 
   Future<void> updateContract(BuildContext context, ByteData contract) async {
@@ -734,18 +735,13 @@ class WasherProvider with ChangeNotifier {
           made_quiz: v['made_quiz'],
           contract_accept: v['contract_accept'],
           enable: v['enable'],
-          rate: v['rate'],
+          rate: v['rate'].toDouble(),
           abn: v['abn'],
           contract: v['contract'],
           driver_licence: v['driver_licence'],
           picture: v['picture'],
         );
       } else if (v['errors'] != '') {
-        await comumDialog(
-          context,
-          'Erro!',
-          v['errors'],
-        );
       }
     } catch (e) {
       await comumDialog(

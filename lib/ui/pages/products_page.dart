@@ -74,6 +74,7 @@ class _ProductsPageState extends State<ProductsPage> {
                     ),
                   ):
                   ProductPurchaseWidget(
+                    productID: listProducts[itemIndex]!.id,
                     productName: listProducts[itemIndex]!.name,
                     productPrice: listProducts[itemIndex]!.price,
                     productImageUrl: listProducts[itemIndex]!.photo,
@@ -202,9 +203,11 @@ class _ProductsPageState extends State<ProductsPage> {
     final int productPrice;
     final String productImageUrl;
     final String information;
+    final int? productID;
 
     const ProductPurchaseWidget({
       Key? key,
+      required this.productID,
       required this.productName,
       required this.productPrice,
       required this.productImageUrl,
@@ -392,7 +395,7 @@ class _ProductsPageState extends State<ProductsPage> {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => PayPage(payAmount: widget.productPrice * quantity)),
+                    MaterialPageRoute(builder: (context) => PayPage(payAmount: widget.productPrice * quantity, payQuantity: quantity,productID: widget.productID,), ),
                   );
                 },
                 child: const Text(

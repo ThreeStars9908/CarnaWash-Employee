@@ -27,13 +27,13 @@ class _FirstLoginHomePageState extends State<FirstLoginHomePage> {
   List questionList = [];
 
   List isOpen = [
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
   ];
 
   late TimeAvailableModel timeAvailable;
@@ -54,23 +54,26 @@ class _FirstLoginHomePageState extends State<FirstLoginHomePage> {
   @override
   void initState() {
     super.initState();
-
-    if (widget.verify! == 1) {
-      n = 2;
-    }
+    print('first login ---');
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
       WasherProvider washerProvider = Provider.of(
         context,
         listen: false,
       );
+      await washerProvider.loadTimeAvailable(context);
       timeAvailable = washerProvider.getAllTimeAvailable();
-
+      print('first login --');
       await washerProvider.loadQuiz(context);
 
       for (QuizQuestionModel i in washerProvider.listQuizQuestions) {
         questionList.add([i, 0]);
       }
+      setState(() {});
     });
+    if (widget.verify! == 1) {
+      n = 2;
+    }
+    setState(() {});
   }
 
   // CHANGE DOC TO BLOB
@@ -83,7 +86,7 @@ class _FirstLoginHomePageState extends State<FirstLoginHomePage> {
               n == 4 ||
               n == 6 ||
               n == 10 ||
-              (n == 3 && !(questionValue + 1 < questionList.length / 4)))
+              (n == 3 && !(questionValue < questionList.length / 4)))
           ? Center(
               child: geralComponent(context),
             )
@@ -115,7 +118,7 @@ class _FirstLoginHomePageState extends State<FirstLoginHomePage> {
             n == 4 ||
             n == 6 ||
             n == 10 ||
-            n == 3 && !(questionValue + 1 < questionList.length / 4))
+            n == 3 && !(questionValue< questionList.length / 4))
           Spacer(),
         Padding(
           padding: const EdgeInsets.only(bottom: 5, left: 5, right: 5),
@@ -134,13 +137,17 @@ class _FirstLoginHomePageState extends State<FirstLoginHomePage> {
                 });
               } else if (n == 3) {
                 setState(() {
-                  if (questionValue + 1 < questionList.length / 4) {
-                    questionValue++;
+                  if (questionValue < questionList.length / 4) {
+                    questionValue ++;
                   } else {
+                    n = 4;
                     setState(() {
                       washerProvider.loadQuizGrade(questionList);
                     });
-                    n = 4;
+                    setState(() async{
+                      await washerProvider.answerQuiz(context);
+                    });
+
                   }
                 });
               } else if (n == 4) {
@@ -202,7 +209,7 @@ class _FirstLoginHomePageState extends State<FirstLoginHomePage> {
                             ? 'Next'
                             : n == 2
                                 ? 'Go to Quiz'
-                                : (questionValue + 1 <
+                                : (questionValue <
                                             questionList.length / 4 &&
                                         n == 3)
                                     ? 'Next'
@@ -554,13 +561,18 @@ class _FirstLoginHomePageState extends State<FirstLoginHomePage> {
               ),
               const SizedBox(height: 16),
               Column(
-                children: List.generate(
+                children: (questionValue < questionList.length / 4 && n == 3)
+                    ? List.generate(
                   chunk(questionList, 4)[questionValue].length,
-                  (index) {
-                    return questionBox(context,
-                        chunk(questionList, 4)[questionValue][index], index);
+                      (index) {
+                    return questionBox(
+                      context,
+                      chunk(questionList, 4)[questionValue][index],
+                      index,
+                    );
                   },
-                ),
+                )
+                    : const [SizedBox(height: 16)],
               ),
             ],
           ),
@@ -589,7 +601,7 @@ class _FirstLoginHomePageState extends State<FirstLoginHomePage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          quest[0].question,
+          n.toString() + '. ' +  quest[0].question,
           style: const TextStyle(
             fontWeight: FontWeight.w500,
           ),
@@ -912,12 +924,12 @@ class _FirstLoginHomePageState extends State<FirstLoginHomePage> {
                 IconButton(
                   splashColor: Colors.white,
                   splashRadius: 10,
-                  icon: Icon(!isOpen[index].isOpen
+                  icon: Icon(!isOpen[index]
                       ? Icons.keyboard_arrow_down
                       : Icons.keyboard_arrow_down),
                   onPressed: () {
                     setState(() {
-                      isOpen[index].isOpen = !isOpen[index].isOpen;
+                      isOpen[index] = !isOpen[index];
                     });
                   },
                 )
@@ -925,7 +937,7 @@ class _FirstLoginHomePageState extends State<FirstLoginHomePage> {
             ),
           ),
         ),
-        isOpen[index].isOpen
+        isOpen[index]
             ? Container(
                 decoration: BoxDecoration(
                   color: Colors.white,

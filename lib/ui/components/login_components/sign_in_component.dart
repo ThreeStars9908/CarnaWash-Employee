@@ -92,7 +92,11 @@ class _SignInComponentState extends State<SignInComponent> {
                     builder: (context) => const HomePage(validate: false),
                   ),
                 );
-              } else {
+              } else if (i == 1){
+                Navigator.of(context)
+                    .pushReplacementNamed(AppRoutes.FIRST_LOGIN_HOME);
+              }
+              else {
                 Navigator.push(
                   context,
                   MaterialPageRoute(

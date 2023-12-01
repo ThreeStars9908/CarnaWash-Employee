@@ -29,13 +29,13 @@ class _AvailabilityPageState extends State<AvailabilityPage> {
   }
 
   List isOpen = [
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
   ];
 
   late TimeAvailableModel timeAvailable;
@@ -45,7 +45,10 @@ class _AvailabilityPageState extends State<AvailabilityPage> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
-      WasherProvider washerProvider = Provider.of(context);
+      WasherProvider washerProvider = Provider.of(
+        context,
+        listen: false,
+      );
 
       await washerProvider.loadTimeAvailable(context);
       timeAvailable = washerProvider.getAllTimeAvailable();
@@ -56,7 +59,10 @@ class _AvailabilityPageState extends State<AvailabilityPage> {
   @override
   Widget build(BuildContext context) {
     WasherProvider washerProvider = Provider.of(context);
-
+    if (timeAvailable == null) {
+      // Display a loading state or return an empty widget
+      return CircularProgressIndicator();
+    }
     return Scaffold(
       bottomNavigationBar: navigationBarComponent(context),
       body: SingleChildScrollView(
@@ -219,12 +225,12 @@ class _AvailabilityPageState extends State<AvailabilityPage> {
                 IconButton(
                   splashColor: Colors.white,
                   splashRadius: 10,
-                  icon: Icon(!isOpen[index].isOpen
+                  icon: Icon(!isOpen[index]
                       ? Icons.keyboard_arrow_down
                       : Icons.keyboard_arrow_down),
                   onPressed: () {
                     setState(() {
-                      isOpen[index].isOpen = !isOpen[index].isOpen;
+                      isOpen[index] = !isOpen[index];
                     });
                   },
                 )
@@ -232,7 +238,7 @@ class _AvailabilityPageState extends State<AvailabilityPage> {
             ),
           ),
         ),
-        isOpen[index].isOpen
+        isOpen[index]
             ? Container(
                 decoration: BoxDecoration(
                   color: Colors.white,

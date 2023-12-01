@@ -34,6 +34,7 @@ class WalletProvider with ChangeNotifier {
       var v = jsonDecode(response.body);
 
       if (response.statusCode == 200) {
+        _cards.clear();
         for (Map i in v) {
           _cards.add(
             CardModel(
@@ -62,7 +63,61 @@ class WalletProvider with ChangeNotifier {
       );
     }
   }
+  Future<void> payProducts(
+      BuildContext context,
+      int productID,
+      int quantity,
+      int payAmount,
+      ) async {
+    final UserProvider userProvider = Provider.of(
+      context,
+      listen: false,
+    );
+    try {
+      DateTime now = DateTime.now();
+      String str_now = now.toString();
+      final response = await http.post(
+        Uri.parse('${Constants.BACKEND_BASE_URL}/products/purchase/$productID/$quantity/$payAmount/$str_now'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer ${userProvider.token}',
+        },
+      );
 
+      var v = jsonDecode(response.body);
+
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Purchased Successfully!'),
+            action: SnackBarAction(
+              label: 'Okay',
+              onPressed: () {},
+            ),
+          ),
+        );
+
+        await loadCards(context);
+
+        Navigator.of(context).pop();
+      } else if (v['errors'] != '') {
+        await comumDialog(
+          context,
+          'Error',
+          v['errors'],
+        );
+      }
+
+
+    } catch (e) {
+      await comumDialog(
+        context,
+        'Provider Error! Create card',
+        e.toString(),
+      );
+    }
+  }
   Future<void> createCard(
     BuildContext context,
     CardCreateUpdateModel card,

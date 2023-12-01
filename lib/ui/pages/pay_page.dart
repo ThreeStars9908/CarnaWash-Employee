@@ -7,7 +7,9 @@ import '../ui.dart';
 
 class PayPage extends StatefulWidget {
   int? payAmount;
-  PayPage({super.key, this.payAmount});
+  int? payQuantity;
+  int? productID;
+  PayPage({super.key, this.payAmount, this.payQuantity, this.productID});
 
   @override
   State<PayPage> createState() => _PayPageState();
@@ -198,8 +200,12 @@ class _PayPageState extends State<PayPage> {
     return
       GestureDetector(
         onTap: (){
-          setState(() {
+          setState((){
             purchased = 1;
+
+          });
+          setState(() async{
+            await walletProvider.payProducts(context, widget.productID!, widget.payQuantity!, widget.payAmount!);
           });
       },
       child:
