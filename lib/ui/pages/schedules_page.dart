@@ -36,11 +36,17 @@ class _SchedulesPageState extends State<SchedulesPage> {
     });
   }
 
-  void _onDaySelected(DateTime day, DateTime focusedDay) {
-    setState(() async {
+  void _onDaySelected(DateTime day, DateTime focusedDay) async {
+    setState(() {
       today = day;
-      await scheduleProvider.loadSchedules(context, day);
     });
+
+    await scheduleProvider.loadSchedules(context, day).then((value) {
+      setState(() {
+        listSchedule = scheduleProvider.listSchedules;
+      });
+    },
+    );
   }
 
   @override
@@ -246,7 +252,7 @@ class _ScheduleBoxState extends State<ScheduleBox> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Costumer: ${client!.name}',
+                                'Costumer:',
                                 style: const TextStyle(
                                   fontWeight: FontWeight.w500,
                                   fontSize: 14,

@@ -53,7 +53,7 @@ class ScheduleProvider with ChangeNotifier {
             payment_schedule_id: i['payment_schedule_id'],
             status: i['status'],
             washer_id: i['washer_id'],
-            rate: i['rate'],
+            rate: i['rate'].toDouble(),
           ));
           print(nI ++);
         }
@@ -234,7 +234,7 @@ class ScheduleProvider with ChangeNotifier {
           payment_schedule_id: v['payment_schedule_id'],
           status: v['status'],
           washer_id: v['washer_id'],
-          rate: v['rate'],
+          rate: v['rate'].toDouble(),
         );
       } else if (v['errors'] != '') {
         await comumDialog(
@@ -285,7 +285,7 @@ class ScheduleProvider with ChangeNotifier {
             payment_schedule_id: i['payment_schedule_id'],
             status: i['status'],
             washer_id: i['washer_id'],
-            rate: i['rate'],
+            rate: i['rate'].toDouble(),
           ));
         }
       } else if (v['errors'] != '') {

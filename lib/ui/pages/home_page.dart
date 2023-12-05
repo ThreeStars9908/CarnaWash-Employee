@@ -381,7 +381,7 @@ class _WashingProcessBlockState extends State<WashingProcessBlock> {
   List<CarObjectModel?> carsObjectList = [];
   List addonList = [];
   late ClientModel? client;
-
+  String clientName = '';
   @override
   void initState() {
     super.initState();
@@ -391,12 +391,17 @@ class _WashingProcessBlockState extends State<WashingProcessBlock> {
       ServicesProvider servicesProvider_second = Provider.of(context, listen: false);
       VehiclesProvider vehiclesProvider = Provider.of(context, listen: false);
       await vehiclesProvider.loadCars(context);
+      print('washer id' + widget.scheduleModel.washer_id!.toString());
       client = await scheduleProvider.loadClient(
         context,
         widget.scheduleModel.washer_id!,
       );
+      setState(() {
+        clientName = client!.name;
+      });
+
       for (var i in widget.scheduleModel.cars_list_id.split(';')) {
-        print(i);
+
         CarObjectModel? car = await scheduleProvider.loadObjectCar(
           context,
           int.parse(i),
@@ -484,7 +489,7 @@ class _WashingProcessBlockState extends State<WashingProcessBlock> {
                     ],
                   ),
                   Text(
-                    'Client: ${client!.name}',
+                    'Client: ${clientName}',
                     style: const TextStyle(
                       fontSize: 18,
                     ),

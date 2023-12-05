@@ -149,7 +149,6 @@ class UserProvider with ChangeNotifier {
 
   Future<void> updatePerfil(
       BuildContext context, UserCompleteModel newUser) async {
-    print('sssssss________');
     try {
       final response = await http.put(
         Uri.parse('${Constants.BACKEND_BASE_URL}/users/'),
