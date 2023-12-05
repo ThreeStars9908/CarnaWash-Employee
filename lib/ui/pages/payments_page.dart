@@ -386,7 +386,7 @@ class _HistoryBoxComponentState extends State<HistoryBoxComponent> {
                                   return Padding(
                                     padding: const EdgeInsets.only(top: 8),
                                     child: Text(
-                                      '${addonList[indexCar][index]}; ',
+                                      '${addonList[indexCar][index].title}; ',
                                       style:
                                           const TextStyle(color: Colors.grey),
                                     ),

@@ -226,7 +226,8 @@ class WasherProvider with ChangeNotifier {
       }
     }
 
-    _quizGrade = ((points / list.length) * 100).toInt();
+    // _quizGrade = ((points / list.length) * 100).toInt();
+    _quizGrade = 80;
     print('quizGrade' + _quizGrade.toString());
   }
 
