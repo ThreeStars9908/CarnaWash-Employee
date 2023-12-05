@@ -53,7 +53,6 @@ class _AccountPageState extends State<AccountPage> {
       addressController.text = userProvider.perfil.address;
 
       abnController.text = washerProvider.washerInfo.abn;
-      print(washerProvider.washerInfo.abn);
       bankController.text = washerProvider.bankInfo.bank_name;
       accountNameController.text = washerProvider.bankInfo.account_name;
       accountNumberController.text = washerProvider.bankInfo.account_number;

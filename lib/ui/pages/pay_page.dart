@@ -18,9 +18,21 @@ class PayPage extends StatefulWidget {
 class _PayPageState extends State<PayPage> {
 
   int purchased = 0;
+  late WalletProvider walletProvider;
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+      walletProvider = Provider.of(
+        context,
+        listen: false,
+      );
+      await walletProvider.loadCards(context);
+      setState(() {});
+    });
+  }
   @override
   Widget build(BuildContext context) {
-    WalletProvider walletProvider = Provider.of(context, listen: false);
+
     TextEditingController codeController = TextEditingController();
     return Scaffold(
       backgroundColor: Colors.grey[100]!,

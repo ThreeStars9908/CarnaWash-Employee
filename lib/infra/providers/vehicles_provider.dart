@@ -22,11 +22,10 @@ class VehiclesProvider with ChangeNotifier {
     );
     try {
       final response = await http.get(
-        Uri.parse('${Constants.BACKEND_BASE_URL}/cars/'),
+        Uri.parse('${Constants.BACKEND_BASE_URL}/cars/all'),
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
-          'Authorization': 'Bearer ${userProvider.token}',
         },
       );
       print('cars--' + response.body);

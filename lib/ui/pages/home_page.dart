@@ -495,27 +495,6 @@ class _WashingProcessBlockState extends State<WashingProcessBlock> {
                           (indexCar) => Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // Row(
-                          //   children: [
-                          //     SizedBox(
-                          //       width: MediaQuery.of(context).size.width * 0.2,
-                          //       child: Text(
-                          //         'Vehicle $indexCar',
-                          //         style: const TextStyle(
-                          //           color: Colors.grey,
-                          //           fontSize: 16,
-                          //         ),
-                          //       ),
-                          //     ),
-                          //     Container(
-                          //       decoration: const BoxDecoration(
-                          //         color: Colors.grey,
-                          //       ),
-                          //       width: MediaQuery.of(context).size.width * 0.55,
-                          //       height: 1,
-                          //     ),
-                          //   ],
-                          // ),
                           Text(
                             '${carsList[indexCar]!.brand} - ${carsList[indexCar]!.model} - ${servicesProvider_third.getCarsizeComplete(carsList[indexCar]!.car_size_id).title}',
                             style: const TextStyle(

@@ -272,6 +272,7 @@ class ScheduleProvider with ChangeNotifier {
       var v = jsonDecode(response.body);
       print('ongoing response' + response.body);
       if (response.statusCode == 200 && v != null) {
+        _listSchedulesOngoing.clear();
         for (Map i in v) {
           _listSchedulesOngoing.add(ScheduleModel(
             id: i['id'],

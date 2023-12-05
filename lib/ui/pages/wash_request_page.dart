@@ -31,7 +31,8 @@ class _WashRequestPageState extends State<WashRequestPage> {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
       ScheduleProvider scheduleProvider = Provider.of(context, listen: false);
       ServicesProvider servicesProvider = Provider.of(context, listen: false);
-
+      VehiclesProvider vehiclesProvider = Provider.of(context, listen: false);
+      await vehiclesProvider.loadCars(context);
       await servicesProvider.loadAdditional(context);
       await servicesProvider.loadCarsize(context);
       client = await scheduleProvider.loadClient(context, widget.preData!.washer_id!);
@@ -355,7 +356,7 @@ class _WashRequestPageState extends State<WashRequestPage> {
       }
       addonList.add(addonList_tm);
     }
-
+    print('carsList size' + carsList.length.toString());
     double addonPrice = addonList[id].fold<double>(
       0,
           (previousValue, addon) => previousValue + double.parse(addon.price),
